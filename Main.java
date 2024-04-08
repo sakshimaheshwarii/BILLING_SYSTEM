@@ -1,96 +1,142 @@
 import java.util.*;
 
-public class Main{
-    
-    static void billEnquiry() {
+class Customer {
+    private String username;
+    private String password;
+    private String name;
+    private String mobileNumber;
+    private double balance;
+
+    public Customer(String username, String password, String name, String mobileNumber, double balance) {
+        this.username = username;
+        this.password = password;
+        this.name = name;
+        this.mobileNumber = mobileNumber;
+        this.balance = balance;
+    }
+
+    // Getters and setters
+    // ...
+
+    // Method to perform bill enquiry
+    public void billEnquiry(int unitsConsumed) {
         System.out.println("---------Bill ENQUIRY---------");
-        int balance=9876543;
-        Scanner sc=new Scanner(System.in);
-        System.out.print("Units Consumed: ");
-        int units=sc.nextInt();
-        double bill =units*0.75;
+        double bill = unitsConsumed * 0.75;
 
-        if(bill<balance)
-        {
-            System.out.println("Dear Customer, please pay the "+bill+" before deadline.\n Thank You" );
-        }
-        else
-        {
-            System.out.println("You have insufficient balance to pay the "+bill);
-        }
-
-    }
-
-    static void fine()
-    {
-        System.out.println("You will be fined if bill not paid before due date. And it will be accordingly the below details: \n 1. 10, \n 2. 15, \n 3. 25, \n 4. 45");
-        Scanner sc = new Scanner(System.in);
-        int bill=sc.nextInt();
-        int days=sc.nextInt();
-        switch (days)
-        {
-            case 1: System.out.println("After 10 days, you will have to pay "+ ((days*30)+ bill)); break;
-            case 2: System.out.println("After 15 days, you will have to pay "+ ((days*50)+ bill)); break;
-            case 3: System.out.println("After 25 days, you will have to pay "+ ((days*70)+ bill)); break;
-            case 4: System.out.println("After 45 days, you will have to pay "+ ((days*120)+ bill)); break;
+        if (bill <= balance) {
+            System.out.println("Dear Customer, please pay the " + bill + " before the deadline.\nThank You");
+        } else {
+            System.out.println("You have insufficient balance to pay the bill.");
         }
     }
 
+    // Method to calculate fine
+    public void calculateFine(int bill, int days) {
+        System.out.println("You will be fined if the bill is not paid before the due date.");
+        double fineAmount = 0;
+
+        switch (days) {
+            case 1:
+                fineAmount = days * 10;
+                break;
+            case 2:
+                fineAmount = days * 15;
+                break;
+            case 3:
+                fineAmount = days * 25;
+                break;
+            case 4:
+                fineAmount = days * 45;
+                break;
+        }
+
+        double totalAmount = bill + fineAmount;
+        System.out.println("After " + days + " days, you will have to pay " + totalAmount);
+    }
+}
+
+public class Main {
+    private static Map<String, Customer> customers = new HashMap<>();
+
+    // Method to perform login
     static void login() {
-        String savedUsername = "hello java";
-        String savedPassword = "password";
         Scanner sc = new Scanner(System.in);
         System.out.println("Welcome to the Login Page");
         System.out.println("(username and password are case sensitive)");
 
         System.out.print("Username: ");
         String username = sc.nextLine();
-        System.out.println();
 
         System.out.print("Password: ");
         String password = sc.nextLine();
-        System.out.println();
 
-        if (username.equals(savedUsername) && password.equals(savedPassword))
-        {
+        Customer customer = customers.get(username);
+        if (customer != null && customer.getPassword().equals(password)) {
             System.out.println("Login Successful!");
-            System.out.println("how may we help you?\n you want to know,\n 1. Bill enquiry,\n 2. \n 3. ");
-            int num=sc.nextInt();
-            switch(num)
-            {
-                case 1: billEnquiry();break;
+            System.out.println("How may we help you?");
+            System.out.println("You want to know:");
+            System.out.println("1. Bill enquiry");
+            System.out.println("2. Calculate fine");
+
+            int choice = sc.nextInt();
+            switch (choice) {
+                case 1:
+                    System.out.print("Enter units consumed: ");
+                    int units = sc.nextInt();
+                    customer.billEnquiry(units);
+                    break;
+                case 2:
+                    System.out.print("Enter bill amount: ");
+                    int bill = sc.nextInt();
+                    System.out.print("Enter number of days past due date: ");
+                    int days = sc.nextInt();
+                    customer.calculateFine(bill, days);
+                    break;
+                default:
+                    System.out.println("Invalid choice");
             }
-        }
-        else
-        { 
+        } else {
             System.out.println("Invalid username or password. Please try again.");
         }
     }
 
-    static void OpenAccount() {
+    // Method to open a new account
+    static void openAccount() {
         Scanner sc = new Scanner(System.in);
+
+        System.out.print("Enter Username: ");
+        String username = sc.nextLine();
+
+        System.out.print("Enter Password: ");
+        String password = sc.nextLine();
 
         System.out.print("Enter Name: ");
         String name = sc.nextLine();
-        System.out.println();
 
         System.out.print("Enter Mobile Number: ");
-        String mobile_num = sc.nextLine();
-        System.out.println("details saved.");
+        String mobileNumber = sc.nextLine();
+
+        System.out.println("Account created successfully.");
+        customers.put(username, new Customer(username, password, name, mobileNumber, 9876543));
     }
 
+    // Main method
     public static void main(String[] args) {
         System.out.println("Greetings from Bill Department");
-        System.out.println("1. ARE YOU NEW HERE?\n2. EXISTING CUSTOMER?");
+        System.out.println("1. New Customer\n2. Existing Customer?");
+
         Scanner sc = new Scanner(System.in);
         int input = sc.nextInt();
+
         switch (input) {
             case 1:
-                OpenAccount();
+                openAccount();
                 break;
             case 2:
                 login();
                 break;
+            default:
+                System.out.println("Invalid choice");
         }
     }
 }
